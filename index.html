@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Email Copy Button</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Email Copy</title>
 
 <style>
 :root {
@@ -45,6 +46,7 @@ body {
 }
 
 .card {
+  width: 100%;
   max-width: 420px;
   margin: 0 auto;
   background: var(--bg);
@@ -60,37 +62,20 @@ body {
   margin-bottom: 8px;
 }
 
-.row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.email {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: var(--button-bg);
-  color: var(--text);
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-button {
+.email-button {
+  width: 100%;
   border: none;
   cursor: pointer;
   border-radius: 8px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   background: var(--button-bg);
   color: var(--text);
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.15s ease;
+  text-align: center;
+  transition: background 0.15s ease;
 }
 
-button:hover {
+.email-button:hover {
   background: var(--button-hover);
 }
 
@@ -110,20 +95,14 @@ button:hover {
 
 <body>
   <div class="card">
-    <div class="label">이메일 문의</div>
+    <div class="label">Email</div>
 
-    <div class="row">
-      <div class="email" id="email">
-        gamja05300@gmail.com
-      </div>
-
-      <button id="copyBtn">
-        복사
-      </button>
-    </div>
+    <button class="email-button" id="copyBtn">
+      gamja05300@gmail.com
+    </button>
 
     <div class="status" id="status">
-      ✓ 이메일 주소가 복사되었습니다
+      ✓ Copied
     </div>
   </div>
 
@@ -137,23 +116,18 @@ btn.addEventListener("click", async () => {
     await navigator.clipboard.writeText(email);
 
     status.classList.add("show");
-    btn.textContent = "완료";
+    btn.textContent = "Copied!";
 
     setTimeout(() => {
       status.classList.remove("show");
-      btn.textContent = "복사";
+      btn.textContent = email;
     }, 2000);
-  } catch {
-    const textarea = document.createElement("textarea");
-    textarea.value = email;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textarea);
 
-    status.classList.add("show");
+  } catch (err) {
+    btn.textContent = "Copy failed";
+
     setTimeout(() => {
-      status.classList.remove("show");
+      btn.textContent = email;
     }, 2000);
   }
 });
