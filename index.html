@@ -1,192 +1,162 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Email Copy</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Email Copy Button</title>
 
 <style>
 :root {
+  --bg: #ffffff;
   --text: #37352f;
-  --muted: #787774;
-  --border: rgba(55, 53, 47, 0.12);
-  --button-bg: rgba(55, 53, 47, 0.08);
-  --button-hover: rgba(55, 53, 47, 0.12);
-  --success: #0f9d58;
+  --border: rgba(55, 53, 47, 0.16);
+  --button-bg: #f7f6f3;
+  --button-hover: #efeeeb;
+  --success: #0f7b0f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: rgba(255,255,255,0.92);
-    --muted: rgba(255,255,255,0.55);
-    --border: rgba(255,255,255,0.14);
-    --button-bg: rgba(255,255,255,0.08);
-    --button-hover: rgba(255,255,255,0.14);
+    --bg: #191919;
+    --text: #e9e9e7;
+    --border: rgba(255,255,255,0.12);
+    --button-bg: #2a2a2a;
+    --button-hover: #333333;
     --success: #4ade80;
   }
 }
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-html,
 body {
-  width: 100%;
+  margin: 0;
+  padding: 16px;
   background: transparent;
   font-family:
-    Inter,
     ui-sans-serif,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
+    Helvetica,
+    Arial,
     sans-serif;
 }
 
-body {
-  padding: 12px;
-}
-
-.container {
-  width: 100%;
-  max-width: 520px;
+.card {
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .label {
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0.7;
   margin-bottom: 8px;
 }
 
-.email-row {
+.row {
   display: flex;
   gap: 8px;
   align-items: center;
 }
 
-.email-box {
+.email {
   flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  border: 1px solid var(--border);
-  border-radius: 10px;
-
-  padding: 12px 14px;
-
-  color: var(--text);
-  cursor: pointer;
-
-  transition: all 0.15s ease;
-}
-
-.email-box:hover {
+  padding: 10px 12px;
+  border-radius: 8px;
   background: var(--button-bg);
-}
-
-.icon {
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.email-text {
+  color: var(--text);
   font-size: 14px;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.copy-btn {
+button {
   border: none;
-  border-radius: 10px;
-
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 10px 14px;
   background: var(--button-bg);
   color: var(--text);
-
-  padding: 12px 16px;
-
   font-size: 14px;
   font-weight: 500;
-
-  cursor: pointer;
-
   transition: all 0.15s ease;
 }
 
-.copy-btn:hover {
+button:hover {
   background: var(--button-hover);
 }
 
-.toast {
-  margin-top: 10px;
-  font-size: 13px;
+.status {
+  margin-top: 8px;
+  font-size: 12px;
   color: var(--success);
-
   opacity: 0;
-  transform: translateY(-2px);
-
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
-.toast.show {
+.status.show {
   opacity: 1;
-  transform: translateY(0);
-}
-
-@media (max-width: 480px) {
-  .email-row {
-    flex-direction: column;
-  }
-
-  .copy-btn {
-    width: 100%;
-  }
 }
 </style>
 </head>
 
 <body>
+  <div class="card">
+    <div class="label">이메일 문의</div>
 
-<div class="container">
-  <div class="label">Contact</div>
-
-  <div class="email-row">
-    <div class="email-box" onclick="copyEmail()">
-      <span class="icon">✉️</span>
-      <span class="email-text">
+    <div class="row">
+      <div class="email" id="email">
         gamja05300@gmail.com
-      </span>
+      </div>
+
+      <button id="copyBtn">
+        복사
+      </button>
     </div>
 
-    <button class="copy-btn" onclick="copyEmail()">
-      복사
-    </button>
+    <div class="status" id="status">
+      ✓ 이메일 주소가 복사되었습니다
+    </div>
   </div>
-
-  <div id="toast" class="toast">
-    ✓ 이메일 주소가 복사되었습니다.
-  </div>
-</div>
 
 <script>
-function copyEmail() {
-  const email = "gamja05300@gmail.com";
+const email = "gamja05300@gmail.com";
+const btn = document.getElementById("copyBtn");
+const status = document.getElementById("status");
 
-  navigator.clipboard.writeText(email).then(() => {
-    const toast = document.getElementById("toast");
+btn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(email);
 
-    toast.classList.add("show");
+    status.classList.add("show");
+    btn.textContent = "완료";
 
     setTimeout(() => {
-      toast.classList.remove("show");
+      status.classList.remove("show");
+      btn.textContent = "복사";
     }, 2000);
-  });
-}
-</script>
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = email;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
 
+    status.classList.add("show");
+    setTimeout(() => {
+      status.classList.remove("show");
+    }, 2000);
+  }
+});
+</script>
 </body>
 </html>
